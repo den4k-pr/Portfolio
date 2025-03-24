@@ -11,7 +11,6 @@ import { Skills } from './page/Skills';
 import { Layout } from './components/Layout';
 
 import Error404 from './404';
-import { MetaTags } from './metaTags';
 
 const routes = ['/skills', '/hello', '/work'];
 
@@ -60,12 +59,6 @@ const FullScreenSlider: React.FC = () => {
 
 const App = () => (
   <Router basename={process.env.PUBLIC_URL}>
-    <MetaTags
-      title="Portfolio | Web developer"
-      description="Portfolio of a web developer with experience in building modern web applications and websites. Specializing in React, Node.js, MERN stack, and full-stack development to create efficient and responsive solutions."
-      imageUrl="/profile/metaImg.png"
-      url="https://portfolio-yak.vercel.app"
-    />
     <Routes>
       <Route path="/" element={<Navigate to="/hello" replace />} />
       {routes.map((path) => (
