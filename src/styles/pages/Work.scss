@@ -16,8 +16,10 @@
 
         .table{
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
+            justify-content: space-around;
             overflow-y: scroll;
+            background-color: #12121284;
 
             border: 2px solid $secondColorContent;
 
@@ -209,9 +211,19 @@
 }
 
 @media(max-width: 600px) {
+    .table{
+        padding: 0px 15px;
+        gap: 15px;
+    }
     .table-item{
         max-width: 200px;
-        margin: 0 0 0 auto;
+        height: 180px;
+        margin: 0 auto 0 auto;
+    }
+
+    .table-item .work-image img,
+    .table-item .item__info{
+        height: 180px;
     }
 
     .sortList{
