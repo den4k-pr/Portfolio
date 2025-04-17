@@ -18,15 +18,15 @@ export const WorkTable = () => {
                                 <img src="/icons/link.svg" alt={`link-${result.indexOf(item) + 1}`} />
                             </Link>
                         </div>
-                        <div className="work-image">
+                        <Link to={item.link} className="work-image">
                             <img src={`/work/${item.img}.png`} alt={`Work ${result.indexOf(item) + 1}`} />
-                        </div>
+                        </Link>
                     </>
                 ) : (
                     <>
-                        <div className="work-image">
+                        <Link to={item.link} className="work-image">
                             <img src={`/work/${item.img}.png`}  alt={`Work ${result.indexOf(item) + 1}`} />
-                        </div>
+                        </Link>
                         <div className="item__info">
                             <h2 className="item__info-title">{item.title}</h2>
                             <span className="item__info-number">{result.indexOf(item) + 1}</span>
