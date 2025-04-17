@@ -9,10 +9,10 @@ export const useWorkTableAnimation = () => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const animationFrameRef = useRef<number | null>(null);
     const startTimeRef = useRef<number | null>(null);
+
     const [isHovered, setIsHovered] = useState(false);
-    const [isUserScrolling, setIsUserScrolling] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
     const [hasInteracted, setHasInteracted] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     const stringValue = useSelector((state: RootState) => selectStringValue(state));
 
@@ -26,70 +26,67 @@ export const useWorkTableAnimation = () => {
 
         const scrollElement = scrollRef.current;
 
-        if (scrollElement) {
-            const duration = 50000; // 25 секунд
-            const maxScrollTop = scrollElement.scrollHeight - scrollElement.clientHeight;
+        if (!scrollElement || hasInteracted) return;
 
-            const animate = (timestamp: number) => {
-                if (!startTimeRef.current) startTimeRef.current = timestamp;
-                const elapsed = timestamp - startTimeRef.current;
+        const duration = 50000; // 50 секунд
+        const maxScrollTop = scrollElement.scrollHeight - scrollElement.clientHeight;
 
-                let progress = (elapsed % duration) / duration;
-                if (progress > 0.5) progress = 1 - progress;
-                const scrollTop = maxScrollTop * (progress * 2);
+        const animate = (timestamp: number) => {
+            if (!startTimeRef.current) startTimeRef.current = timestamp;
+            const elapsed = timestamp - startTimeRef.current;
 
-                if (scrollElement && !isUserScrolling && !hasInteracted) {
-                    scrollElement.scrollTop = scrollTop;
-                }
+            let progress = (elapsed % duration) / duration;
+            if (progress > 0.5) progress = 1 - progress;
+            const scrollTop = maxScrollTop * (progress * 2);
 
-                if (!isHovered && !isUserScrolling && !hasInteracted) {
-                    animationFrameRef.current = requestAnimationFrame(animate);
-                }
-            };
+            scrollElement.scrollTop = scrollTop;
 
-            if (!isHovered && !isUserScrolling && !hasInteracted) {
+            if (!isHovered && !hasInteracted) {
                 animationFrameRef.current = requestAnimationFrame(animate);
             }
+        };
 
-            const handleInteraction = () => {
-                setIsUserScrolling(true);
-                setHasInteracted(true);
-                if (animationFrameRef.current) {
-                    cancelAnimationFrame(animationFrameRef.current);
-                }
+        animationFrameRef.current = requestAnimationFrame(animate);
 
-                setTimeout(() => {
-                    setIsUserScrolling(false);
-                    setHasInteracted(false);
-                    startTimeRef.current = null;
-                    animationFrameRef.current = requestAnimationFrame(animate);
-                }, 3000);
-            };
+        const stopAnimation = () => {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+                animationFrameRef.current = null;
+            }
+            setHasInteracted(true);
+        };
 
-            scrollElement.addEventListener("touchstart", handleInteraction);
-            scrollElement.addEventListener("mousedown", handleInteraction);
+        scrollElement.addEventListener("touchstart", stopAnimation);
+        scrollElement.addEventListener("mousedown", stopAnimation);
 
-            return () => {
-                if (animationFrameRef.current) {
-                    cancelAnimationFrame(animationFrameRef.current);
-                }
-                scrollElement.removeEventListener("touchstart", handleInteraction);
-                scrollElement.removeEventListener("mousedown", handleInteraction);
-                window.removeEventListener("resize", checkIsMobile);
-            };
-        }
-    }, [isHovered, isUserScrolling, hasInteracted, stringValue]);
+        return () => {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
+            scrollElement.removeEventListener("touchstart", stopAnimation);
+            scrollElement.removeEventListener("mousedown", stopAnimation);
+            window.removeEventListener("resize", checkIsMobile);
+        };
+    }, [isHovered, hasInteracted, stringValue]);
 
     const handleMouseEnter = () => {
-        setIsHovered(true);
+        if (!hasInteracted) {
+            setIsHovered(true);
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+                animationFrameRef.current = null;
+            }
+            setHasInteracted(true); // назавжди вимикає анімацію
+        }
     };
 
     const handleMouseLeave = () => {
         setIsHovered(false);
+        // НЕ відновлюємо анімацію
     };
 
     const filterItems = (items: tableListType[], stringValue: string) => {
-        const filteredItems = items.filter((item) => item.category.some((cat) => cat === stringValue));
+        const filteredItems = items.filter((item) => item.category.includes(stringValue));
         return filteredItems.length > 0 ? filteredItems : items;
     };
 
