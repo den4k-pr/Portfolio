@@ -16,6 +16,12 @@ export const useWorkTableAnimation = () => {
 
     const stringValue = useSelector((state: RootState) => selectStringValue(state));
 
+    // Скидання hasInteracted при оновленні stringValue
+    useEffect(() => {
+        setHasInteracted(false);
+        startTimeRef.current = null; // перезапуск анімації
+    }, [stringValue]);
+
     useEffect(() => {
         const checkIsMobile = () => {
             setIsMobile(window.matchMedia("(max-width: 768px)").matches);
@@ -28,7 +34,7 @@ export const useWorkTableAnimation = () => {
 
         if (!scrollElement || hasInteracted) return;
 
-        const duration = 50000; // 50 секунд
+        const duration = 50000;
         const maxScrollTop = scrollElement.scrollHeight - scrollElement.clientHeight;
 
         const animate = (timestamp: number) => {
@@ -76,13 +82,12 @@ export const useWorkTableAnimation = () => {
                 cancelAnimationFrame(animationFrameRef.current);
                 animationFrameRef.current = null;
             }
-            setHasInteracted(true); // назавжди вимикає анімацію
+            setHasInteracted(true);
         }
     };
 
     const handleMouseLeave = () => {
         setIsHovered(false);
-        // НЕ відновлюємо анімацію
     };
 
     const filterItems = (items: tableListType[], stringValue: string) => {
