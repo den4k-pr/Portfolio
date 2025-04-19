@@ -21,7 +21,7 @@ const Home = () => {
                 top={greetingTop}
                 left={greetingLeft}
                 title="Hello."
-                text="Hi, I'm Den, a full-stack developer passionate about modern, efficient solutions in frontend and backend development."
+                text="I'm Den, a full-stack developer passionate about modern, efficient solutions in frontend and backend development."
             />
             <Profile />
         </div>
